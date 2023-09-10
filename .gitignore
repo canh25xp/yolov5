@@ -48,6 +48,10 @@ VOC/
 !targets*.mat
 
 # Neural Network weights -----------------------------------------------------------------------------------------------
+*.ncnn.bin
+*.ncnn.param
+*.pnnx.bin
+*.pnnx.param
 *.weights
 *.pt
 *.pb
@@ -255,3 +259,17 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+datasets
+debug.bin
+debug.param
+debug2.bin
+debug2.param
+weights/segment/yolov5s-seg-idcard-2_ncnn.py
+weights/segment/yolov5s-seg-idcard-2_pnnx.py
+weights/segment/yolov5s-seg-idcard-best_ncnn.py
+weights/segment/yolov5s-seg-idcard-best_pnnx.py
+weights/segment/yolov5s-seg_ncnn.py
+weights/segment/yolov5s-seg_pnnx.py
+weights/segment/yolov5s-seg-idcard-best-2_ncnn.py
+weights/segment/yolov5s-seg-idcard-best-2_pnnx.py
