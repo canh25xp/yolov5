@@ -48,10 +48,6 @@ VOC/
 !targets*.mat
 
 # Neural Network weights -----------------------------------------------------------------------------------------------
-*.ncnn.bin
-*.ncnn.param
-*.pnnx.bin
-*.pnnx.param
 *.weights
 *.pt
 *.pb
@@ -260,6 +256,11 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# Custom
+*.ncnn.bin
+*.ncnn.param
+*.pnnx.bin
+*.pnnx.param
 datasets
 debug.bin
 debug.param
