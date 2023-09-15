@@ -261,6 +261,7 @@ fabric.properties
 *.ncnn.param
 *.pnnx.bin
 *.pnnx.param
+*.Identifier
 datasets
 debug.bin
 debug.param
