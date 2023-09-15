@@ -6,7 +6,7 @@ import os
 import argparse
 
 FILE = Path(__file__).resolve()
-ROOT = FILE.parents[0]
+ROOT = FILE.parents[1]
 
 def main(args):
     inputPath = Path(args.source)
@@ -81,7 +81,7 @@ def main(args):
 
 if(__name__ == '__main__'):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source', default= 'input/warp_perspective/cccd_back_1.jpg', help='input path')
+    parser.add_argument('--source', default= ROOT/'input/warp_perspective/cccd_back_1.jpg', help='input path')
     parser.add_argument('--save', action='store_true', help='save images')
     args = parser.parse_args()
     main(args)
