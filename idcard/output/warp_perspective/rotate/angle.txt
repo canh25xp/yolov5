@@ -1,5 +1,0 @@
-cccdc_front -0
-cccd_back_1 -0
-cccd_back_2 -0
-cccd_back_3 -0
-cmt9_back -0
