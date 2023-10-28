@@ -48,8 +48,7 @@ from models.common import DetectMultiBackend
 from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
 from utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
                            increment_path, non_max_suppression, print_args, scale_boxes, scale_segments,
-                           strip_optimizer, xyxy2xywh)
-from utils.plots import Annotator, colors, save_one_box
+                           strip_optimizer)
 from utils.segment.general import masks2segments, process_mask, process_mask_native
 from utils.torch_utils import select_device, smart_inference_mode
 
@@ -99,7 +98,7 @@ def run(
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Load model
-    device = select_device(device)  
+    device = select_device(device)
     model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data, fp16=half)
     stride, names, pt = model.stride, model.names, model.pt
     imgsz = check_img_size(imgsz, s=stride)  # check image size
@@ -166,7 +165,7 @@ def run(
                 # Segments
                 if save_txt:
                     segments = [
-                        scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=False)
+                        scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=True)
                         for x in reversed(masks2segments(masks))]
 
                 # Print results
@@ -185,8 +184,7 @@ def run(
                 for j, (*xyxy, conf, cls) in enumerate(reversed(det[:, :6])):
                     if save_txt:  # Write to file
                         seg = segments[j].reshape(-1)  # (n,2) to (n*2)
-                        line = (cls, conf, *xyxy, *seg ) if save_conf else (cls, *xyxy, *seg)  # label format
-                        # line = (cls, conf, *xyxy) if save_conf else (cls, *xyxy)  # label format
+                        line = (cls, *seg, conf) if save_conf else (cls, *seg)  # label format
                         with open(f'{txt_path}.txt', 'a') as f:
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
@@ -206,7 +204,7 @@ def run(
                     cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
                     cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
                 cv2.imshow(str(p), im0)
-                if cv2.waitKey(10000) == ord('q'):  # 10 seconds
+                if cv2.waitKey(1) == ord('q'):  # 1 millisecond
                     exit()
 
             # Save results (image with detections)
