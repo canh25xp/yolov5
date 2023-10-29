@@ -22,6 +22,7 @@ from utils.general import (LOGGER, Profile, check_file, check_img_size, check_im
 from utils.segment.general import masks2segments, process_mask, process_mask_native
 from utils.torch_utils import select_device, smart_inference_mode
 
+from rotate import getRotateRectImg
 
 @smart_inference_mode()
 def run(
@@ -139,8 +140,10 @@ def run(
                         scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=False)
                         for x in reversed(masks2segments(masks))]
                     
+                # Rotate based on segment
                 if rotate:
-                    rect=cv2.minAreaRect(segments[0])
+                    rotated, angle = getRotateRectImg(segments[0], im0)
+                    # TODO : the rotated image is not properly cut to the rotateRect size
 
                 # Print results
                 for c in det[:, 5].unique():
@@ -179,6 +182,8 @@ def run(
                     cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
                     cv2.resizeWindow(str(p), im0.shape[1], im0.shape[0])
                 cv2.imshow(str(p), im0)
+                if rotate:
+                    cv2.imshow("rotated",rotated)
                 if cv2.waitKey(10000) == ord('q'):  # 10 seconds
                     exit()
 
