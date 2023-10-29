@@ -68,6 +68,8 @@ def run(
     # Directories
     save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    if rotate:
+        (save_dir / 'rotate').mkdir(parents=True, exist_ok=True)
 
     # Load model
     device = select_device(device)
@@ -121,6 +123,7 @@ def run(
 
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
+            rotate_path = str(save_dir / 'rotate' / p.name)
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # im.txt
             s += '%gx%g ' % im.shape[2:]  # print string
             imc = im0.copy() if save_crop else im0  # for save_crop
@@ -191,6 +194,8 @@ def run(
             if save_img:
                 if dataset.mode == 'image':
                     cv2.imwrite(save_path, im0)
+                if rotate :
+                    cv2.imwrite(rotate_path, rotated)
                 else:  # 'video' or 'stream'
                     if vid_path[i] != save_path:  # new video
                         vid_path[i] = save_path
