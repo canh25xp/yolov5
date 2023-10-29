@@ -146,7 +146,6 @@ def run(
                 # Rotate based on segment
                 if rotate:
                     rotated, angle = getRotateRectImg(segments[0], im0)
-                    # TODO : the rotated image is not properly cut to the rotateRect size
 
                 # Print results
                 for c in det[:, 5].unique():
