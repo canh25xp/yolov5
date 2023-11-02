@@ -138,10 +138,13 @@ def run(
                     det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()  # rescale boxes to im0 size
 
                 # Segments
-                if save_txt:
-                    segments = [
-                        scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=False)
-                        for x in reversed(masks2segments(masks))]
+                if save_txt or rotate:
+                    segments = [] 
+                    for x in reversed(masks2segments(masks)):
+                        segments.append(scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=False))
+                    # segments = [
+                    #     scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=False)
+                    #     for x in reversed(masks2segments(masks))]
                     
                 # Rotate based on segment
                 if rotate:
