@@ -19,10 +19,11 @@ from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreensh
 from utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
                            increment_path, non_max_suppression, print_args, scale_boxes, scale_segments,
                            strip_optimizer, xyxy2xywh)
-from utils.segment.general import masks2segments, process_mask, process_mask_native
+from utils.segment.general import masks2segments, process_mask, process_mask_native, process_mask_upsample
 from utils.torch_utils import select_device, smart_inference_mode
 
 from rotate import getRotateRectImg
+import numpy as np
 
 @smart_inference_mode()
 def run(
@@ -55,6 +56,7 @@ def run(
     vid_stride=1,  # video frame-rate stride
     retina_masks=False,
     rotate=False,
+    save_mask=False
 ):
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
@@ -125,6 +127,8 @@ def run(
             save_path = str(save_dir / p.name)  # im.jpg
             rotate_path = str(save_dir / 'rotate' / p.name)
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # im.txt
+            mask_path = str(save_dir / p.stem) + "_" + str(i) +"_mask.png" # im.png
+        
             s += '%gx%g ' % im.shape[2:]  # print string
             imc = im0.copy() if save_crop else im0  # for save_crop
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
@@ -136,6 +140,14 @@ def run(
                 else:
                     masks = process_mask(proto[i], det[:, 6:], det[:, :4], im.shape[2:], upsample=True)  # HWC
                     det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()  # rescale boxes to im0 size
+                
+                if save_mask:
+                    # Find the max
+                    max_index = torch.argmax(det[:,4], axis=0)
+                    # Save mask
+                    maskImg = masks[max_index,...].detach().cpu().unsqueeze(2).numpy().astype('uint8')
+                    maskImg*=255
+                    cv2.imwrite(mask_path, maskImg)
 
                 # Segments
                 if save_txt or rotate:
@@ -257,6 +269,7 @@ def parse_opt():
     parser.add_argument('--vid-stride', type=int, default=1, help='video frame-rate stride')
     parser.add_argument('--retina-masks', action='store_true', help='whether to plot masks in native resolution')
     parser.add_argument('--rotate', action='store_true', help='rotate detected id card')
+    parser.add_argument('--save-mask', action='store_true', help='save mask')
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     print_args(vars(opt))
