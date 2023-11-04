@@ -1,9 +1,9 @@
 import cv2 as cv
 
-cpp = cv.imread("cpp.png", cv.IMREAD_GRAYSCALE)
-py = cv.imread("py.png", cv.IMREAD_GRAYSCALE)
+im1 = cv.imread("cpp.png", cv.IMREAD_GRAYSCALE)
+im2 = cv.imread("runs/idcard/exp/test_0_mask.png", cv.IMREAD_GRAYSCALE)
 
-diff = cpp - py
+diff = im1 - im2
 
 count = cv.countNonZero(diff)
 
