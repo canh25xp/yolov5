@@ -145,7 +145,7 @@ def run(
                     # Find the max
                     max_index = torch.argmax(det[:,4], axis=0)
                     # Save mask
-                    maskImg = masks[max_index,...].detach().cpu().unsqueeze(2).numpy().astype('uint8')
+                    maskImg = masks[max_index,...].detach().cpu().numpy().astype('uint8')
                     maskImg*=255
                     cv2.imwrite(mask_path, maskImg)
 
