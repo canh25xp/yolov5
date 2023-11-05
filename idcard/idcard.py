@@ -24,6 +24,7 @@ from utils.torch_utils import select_device, smart_inference_mode
 
 from rotate import getRotateRectImg
 import numpy as np
+import time
 
 @smart_inference_mode()
 def run(
@@ -94,6 +95,7 @@ def run(
     # Run inference
     model.warmup(imgsz=(1 if pt else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
+    total_start = time.time()
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
             im = torch.from_numpy(im).to(model.device)
@@ -128,6 +130,7 @@ def run(
             rotate_path = str(save_dir / 'rotate' / p.name)
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # im.txt
             mask_path = str(save_dir / p.stem) + "_" + str(i) +"_mask.png" # im.png
+            angle_path = str(save_dir / 'rotate' / 'angle.txt') # rotate/angle.txt
         
             s += '%gx%g ' % im.shape[2:]  # print string
             imc = im0.copy() if save_crop else im0  # for save_crop
@@ -161,6 +164,9 @@ def run(
                 # Rotate based on segment
                 if rotate:
                     rotated, angle = getRotateRectImg(segments[0], im0)
+                    with open(angle_path, 'a') as f:
+                        f.write("{} {}\n".format(p.stem, angle)) # We save the detected angle, that is, the angle of idcard before rotation.
+                        # f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                 # Print results
                 for c in det[:, 5].unique():
@@ -231,6 +237,8 @@ def run(
     # Print results
     t = tuple(x.t / seen * 1E3 for x in dt)  # speeds per image
     LOGGER.info(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {(1, 3, *imgsz)}' % t)
+    total_end = time.time()
+    print(f"Total run time : {total_end - total_start} seconds")
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
