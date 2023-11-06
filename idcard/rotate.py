@@ -17,3 +17,34 @@ def getRotateRectImg(points : cv2.typing.MatLike, src = cv2.typing.MatLike) :
     # affineMatrix = cv2.getRotationMatrix2D(center, angle, 1)
     result = cv2.warpAffine(src, affineMatrix, (round(width),round(height)))
     return result, angle
+
+
+if __name__ == '__main__':
+    img_path = 'data/images/idcard.jpg'
+    txt_path = 'runs/idcard/exp/labels/idcard.txt'
+    
+    img = cv2.imread(img_path)
+    with open(txt_path, 'r') as f:
+        lines = f.readlines()
+        
+    for line in lines:
+        labels =  line.split()
+    
+    class_index = labels[0]
+    conf = labels[1]
+    x,y,w,h = labels[2:6]
+    segment = labels[6:]
+    
+    count = len(segment)
+    
+    pairs = []
+    for i in range((int)(count/2)):
+        pairs.append([(int)(segment[2*i]), (int)(segment[2*i+1])])
+        
+    segment = np.array(pairs, np.int32)
+    
+    result, angle = getRotateRectImg(pairs, img)
+    
+    print(angle)
+   
+    
