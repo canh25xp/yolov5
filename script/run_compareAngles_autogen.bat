@@ -1,5 +1,5 @@
 @echo off
-cd ..
+call env.bat
 
 set CWD=.
 
