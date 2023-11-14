@@ -256,7 +256,7 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-# Custom
+# User Custom files
 *.ncnn.bin
 *.ncnn.param
 *.pnnx.bin
@@ -264,3 +264,4 @@ fabric.properties
 *.Identifier
 datasets
 weights/**/*.py
+.vscode/
