@@ -25,6 +25,8 @@ from utils.torch_utils import select_device, smart_inference_mode
 from rotate import getRotateRectImg
 import numpy as np
 import time
+from ultralytics.utils.ops import scale_image
+from perspective import perspectiveTranform
 
 @smart_inference_mode()
 def run(
@@ -57,7 +59,8 @@ def run(
     vid_stride=1,  # video frame-rate stride
     retina_masks=False,
     rotate=False,
-    save_mask=False
+    save_mask=False,
+    perspective=False
 ):
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
@@ -128,6 +131,7 @@ def run(
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
             rotate_path = str(save_dir / 'rotate' / p.name)
+            perspective_path = str(save_dir / 'perspective' / p.name)
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # im.txt
             mask_path = str(save_dir / p.stem) + "_" + str(i) +"_mask.png" # im.png
             angle_path = str(save_dir / 'rotate' / 'angle.txt') # rotate/angle.txt
@@ -150,6 +154,7 @@ def run(
                     # Save mask
                     maskImg = masks[max_index,...].detach().cpu().numpy().astype('uint8')
                     maskImg*=255
+                    maskImg = scale_image(maskImg, im0.shape)
                     cv2.imwrite(mask_path, maskImg)
 
                 # Segments
@@ -168,6 +173,10 @@ def run(
                         f.write("{} {}\n".format(p.stem, angle)) # We save the detected angle, that is, the angle of idcard before rotation.
                         # f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
+                if perspective:
+                    warped, corners = perspectiveTranform(segments[0], im0)
+                    print(corners)
+                    
                 # Print results
                 for c in det[:, 5].unique():
                     n = (det[:, 5] == c).sum()  # detections per class
@@ -215,6 +224,8 @@ def run(
                     cv2.imwrite(save_path, im0)
                 if rotate :
                     cv2.imwrite(rotate_path, rotated)
+                if perspective :
+                    cv2.imwrite(perspective_path, warped)
                 else:  # 'video' or 'stream'
                     if vid_path[i] != save_path:  # new video
                         vid_path[i] = save_path
@@ -276,6 +287,7 @@ def parse_opt():
     parser.add_argument('--vid-stride', type=int, default=1, help='video frame-rate stride')
     parser.add_argument('--retina-masks', action='store_true', help='whether to plot masks in native resolution')
     parser.add_argument('--rotate', action='store_true', help='rotate detected id card')
+    parser.add_argument('--perspective', action='store_true', help='apply perspective transform on detected id card')
     parser.add_argument('--save-mask', action='store_true', help='save mask')
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
