@@ -255,13 +255,3 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-
-# User Custom files
-*.ncnn.bin
-*.ncnn.param
-*.pnnx.bin
-*.pnnx.param
-*.Identifier
-datasets
-weights/**/*.py
-.vscode/
