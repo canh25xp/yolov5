@@ -76,6 +76,9 @@ def run(
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
     if rotate:
         (save_dir / 'rotate').mkdir(parents=True, exist_ok=True)
+        
+    if perspective:
+        (save_dir / 'perspective').mkdir(parents=True, exist_ok=True)
 
     # Load model
     device = select_device(device)
@@ -158,8 +161,8 @@ def run(
                     cv2.imwrite(mask_path, maskImg)
 
                 # Segments
-                if save_txt or rotate:
-                    segments = [] 
+                if save_txt or rotate or perspective:
+                    segments = []
                     for x in reversed(masks2segments(masks)):
                         segments.append(scale_segments(im0.shape if retina_masks else im.shape[2:], x, im0.shape, normalize=False))
                     # segments = [
