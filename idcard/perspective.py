@@ -2,8 +2,6 @@ import imp
 import cv2
 from imutils import perspective
 from matplotlib import contour
-import numpy as np
-from torch import conv1d
 
 def perspectiveTranform(points : cv2.typing.MatLike, src = cv2.typing.MatLike) :
     h, w = src.shape[:2]    
