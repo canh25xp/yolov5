@@ -177,7 +177,7 @@ def run(
                         # f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                 if perspective:
-                    warped, corners = perspectiveTranform(segments[0], im0)
+                    warped, corners = perspectiveTranform(segments[0], im0s)
                     print(corners)
                     
                 # Print results
