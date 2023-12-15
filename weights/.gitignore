@@ -2,4 +2,4 @@
 *.ncnn.param
 *.pnnx.bin
 *.pnnx.param
-**/*.py
+!*idcard*
